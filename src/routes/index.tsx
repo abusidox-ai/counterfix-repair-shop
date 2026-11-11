@@ -1,23 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Game } from "@/game/Game";
 
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Counterfix — The Repair Shop" },
+      { name: "description", content: "Run a first-person repair counter: take jobs, unscrew devices at your repair desk, swap parts and spot stolen goods." },
+      { property: "og:title", content: "Counterfix — The Repair Shop" },
+      { property: "og:description", content: "A tactile first-person repair-shop sim. Ten customers, one repair desk, and a few stolen gadgets." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Game,
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
