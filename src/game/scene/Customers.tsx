@@ -15,7 +15,7 @@ function placeKey(p: CustomerPlace) {
 }
 function placePos(p: CustomerPlace): V3 {
   if (p.kind === "counter") return COUNTER_SLOT;
-  if (p.kind === "queue") return QUEUE_SLOTS[p.slot];
+  if (p.kind === "queue") return QUEUE_SLOTS[p.slot] ?? OUTSIDE;
   return OUTSIDE;
 }
 
@@ -26,7 +26,7 @@ function Customer({ def, index }: { def: CustomerDef; index: number }) {
   const state = useRef<{ key: string; path: V3[]; moving: boolean; anim: string } | null>(null);
 
   useEffect(() => {
-    actions.idle?.play();
+    actions["idle"]?.play();
   }, [actions]);
 
   // give each customer a slight per-person variation

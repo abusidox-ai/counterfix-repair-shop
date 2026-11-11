@@ -49,7 +49,7 @@ export function collide(p: Vec2, radius: number, boxes: Box[], room: Box): Vec2 
           { v: b.maxX - x, fx: b.maxX + radius, fz: z },
           { v: z - b.minZ, fx: x, fz: b.minZ - radius },
           { v: b.maxZ - z, fx: x, fz: b.maxZ + radius },
-        ].sort((a, c) => a.v - c.v)[0];
+        ].sort((a, c) => a.v - c.v)[0]!;
         x = opts.fx; z = opts.fz;
       }
     }

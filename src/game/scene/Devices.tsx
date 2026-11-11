@@ -115,7 +115,7 @@ export function WorldDevice() {
         )}
       </group>
       {onDesk && job.method !== "lockpick" && SCREWS[dev].map((p, i) => (
-        <Screw key={i} index={i} out={job.screwsOut[i]} pos={[base[0] + p[0], base[1] + p[1], base[2] + p[2]]} />
+        <Screw key={i} index={i} out={!!job.screwsOut[i]} pos={[base[0] + p[0], base[1] + p[1], base[2] + p[2]]} />
       ))}
     </group>
   );

@@ -69,7 +69,7 @@ function Room() {
           {wallMat}
         </mesh>
       ))}
-      {[[ROOM.minX, -DOOR.width / 2], [DOOR.width / 2, 3], [9, ROOM.maxX]].map(([x0, x1], i) => (
+      {([[ROOM.minX, -DOOR.width / 2], [DOOR.width / 2, 3], [9, ROOM.maxX]] as [number, number][]).map(([x0, x1], i) => (
         <mesh key={i} position={[(x0 + x1) / 2, 0.55, ROOM.maxZ - 0.01]} receiveShadow>
           <boxGeometry args={[x1 - x0, 1.1, 0.02]} />
           {wainsMat}
@@ -131,7 +131,7 @@ function Outside() {
         <group key={x} position={[x, 0, 26]}>
           <mesh position={[0, 4, 0]} receiveShadow>
             <boxGeometry args={[7.6, 8, 1]} />
-            <meshStandardMaterial color={["#b5764f", "#c9b48c", "#8b9d8a", "#d0a46b", "#a86a55"][i]} roughness={0.9} />
+            <meshStandardMaterial color={["#b5764f", "#c9b48c", "#8b9d8a", "#d0a46b", "#a86a55"][i] ?? "#b5764f"} roughness={0.9} />
           </mesh>
           {[-2, 0, 2].map((wx) => [2.2, 5.2].map((wy) => (
             <mesh key={`${wx}${wy}`} position={[wx, wy, -0.51]}>
@@ -167,7 +167,7 @@ function Counter() {
           {[0, 1.65, 3.3, 4.7].map((z) => (
             <Prop key={z} name="queue-stanchion" pos={[x, 0, z - 0.1]} />
           ))}
-          {[[0, 1.65], [1.65, 3.3], [3.3, 4.7]].map(([a, b]) => (
+          {([[0, 1.65], [1.65, 3.3], [3.3, 4.7]] as [number, number][]).map(([a, b]) => (
             <mesh key={a} position={[x, 0.88, (a + b) / 2 - 0.1]} rotation-x={Math.PI / 2}>
               <cylinderGeometry args={[0.018, 0.018, b - a, 8]} />
               <meshStandardMaterial color="#8c2f24" roughness={0.6} />
@@ -268,7 +268,7 @@ function StockShelves() {
       {[-4.5, -1.5, 1.5].map((z, i) => (
         <group key={z} position={[-10.6, 0, z]} rotation-y={Math.PI / 2}>
           <Prop name="bookcase-open" fit={{ axis: "y", size: 2.1 }} />
-          <Prop name={(["radio", "books", "television-vintage"] as const)[i]} fit={{ axis: "y", size: 0.3 }} pos={[0, 2.1, 0]} />
+          <Prop name={(["radio", "books", "television-vintage"] as const)[i] ?? "books"} fit={{ axis: "y", size: 0.3 }} pos={[0, 2.1, 0]} />
         </group>
       ))}
       {[-6.5, -5.5].map((x) => <Prop key={x} name="bookcase-open-low" fit={{ axis: "y", size: 0.95 }} pos={[x, 0, 8.6]} rot={Math.PI} />)}
@@ -311,14 +311,14 @@ function WallDecor() {
         <meshStandardMaterial map={sign} roughness={0.6} />
       </mesh>
       {posters.map((p, i) => (
-        <mesh key={i} position={[[-6, -4.2, 3.5][i], 1.95, ROOM.minZ + 0.02]}>
+        <mesh key={i} position={[[-6, -4.2, 3.5][i] ?? 0, 1.95, ROOM.minZ + 0.02]}>
           <planeGeometry args={[0.8, 1.12]} />
           <meshStandardMaterial map={p} roughness={0.85} />
         </mesh>
       ))}
       <mesh position={[ROOM.minX + 0.02, 1.95, 5.5]} rotation-y={Math.PI / 2}>
         <planeGeometry args={[0.8, 1.12]} />
-        <meshStandardMaterial map={posters[2]} roughness={0.85} />
+        <meshStandardMaterial map={posters[2] ?? null} roughness={0.85} />
       </mesh>
       <primitive object={clock} position={[2.6, 3.0, ROOM.minZ]} />
     </group>

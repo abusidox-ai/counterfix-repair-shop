@@ -26,7 +26,7 @@ describe("manual repair", () => {
     const s = run(R.createGame(), R.accept, R.pickUp, R.placeOnDesk);
     const r = R.removeScrew(s, 0); // hands equipped
     expect(r.state.job?.screwsOut[0]).toBe(false);
-    expect(r.msgs[0].kind).toBe("bad");
+    expect(r.msgs[0]?.kind).toBe("bad");
   });
   it("charges the part price when fitted, not when taken from the shelf", () => {
     const s0 = R.createGame();
