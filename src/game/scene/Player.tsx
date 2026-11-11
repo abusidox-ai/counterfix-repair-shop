@@ -14,6 +14,12 @@ const REACH = 2.6;
 const LOOK_SENS = 0.0022;
 const DIR = new THREE.Vector3();
 
+/** Player pose lives outside React (per-frame state). */
+export const pose = { x: PLAYER_START.x, z: PLAYER_START.z, yaw: PLAYER_START.yaw, pitch: -0.08 };
+export function resetPose() {
+  Object.assign(pose, { x: PLAYER_START.x, z: PLAYER_START.z, yaw: PLAYER_START.yaw, pitch: -0.08 });
+}
+
 /** Run the action behind the target the player is looking at. */
 function interact(t: Target) {
   const g = useGame.getState();
@@ -71,9 +77,6 @@ function Viewmodel() {
 export function Player() {
   const { camera, gl, scene } = useThree();
   const held = useRef(new Set<string>());
-  const yaw = useRef(PLAYER_START.yaw);
-  const pitch = useRef(-0.08);
-  const pos = useRef({ x: PLAYER_START.x, z: PLAYER_START.z });
   const current = useRef<Target | null>(null);
 
   useEffect(() => {
@@ -84,8 +87,8 @@ export function Player() {
     const onLock = () => useGame.setState({ locked: document.pointerLockElement === el });
     const onMouse = (e: MouseEvent) => {
       if (document.pointerLockElement !== el) return;
-      yaw.current -= e.movementX * LOOK_SENS;
-      pitch.current = Math.max(-1.45, Math.min(1.45, pitch.current - e.movementY * LOOK_SENS));
+      pose.yaw -= e.movementX * LOOK_SENS;
+      pose.pitch = Math.max(-1.45, Math.min(1.45, pose.pitch - e.movementY * LOOK_SENS));
     };
     const onDown = (e: KeyboardEvent) => {
       const st = useGame.getState();
@@ -130,12 +133,14 @@ export function Player() {
     // movement — camera-relative (see sim/movement.ts tests)
     const { fwd, strafe } = keysToAxes(held.current);
     if (fwd || strafe) {
-      const m = moveVector(yaw.current, fwd, strafe);
+      const m = moveVector(pose.yaw, fwd, strafe);
       const speed = held.current.has("ShiftLeft") || held.current.has("ShiftRight") ? SPRINT_SPEED : WALK_SPEED;
-      pos.current = collide({ x: pos.current.x + m.x * speed * dt, z: pos.current.z + m.z * speed * dt }, PLAYER_RADIUS, COLLIDERS, ROOM);
+      const p = collide({ x: pose.x + m.x * speed * dt, z: pose.z + m.z * speed * dt }, PLAYER_RADIUS, COLLIDERS, ROOM);
+      pose.x = p.x;
+      pose.z = p.z;
     }
-    camera.position.set(pos.current.x, EYE_HEIGHT, pos.current.z);
-    camera.rotation.set(pitch.current, yaw.current, 0);
+    camera.position.set(pose.x, EYE_HEIGHT, pose.z);
+    camera.rotation.set(pose.pitch, pose.yaw, 0);
     // look-at target
     camera.getWorldDirection(DIR);
     const o: [number, number, number] = [camera.position.x, camera.position.y, camera.position.z];
@@ -164,6 +169,17 @@ export function useDebugHooks() {
       act: (name: keyof typeof R, ...args: unknown[]) =>
         useGame.getState().act((s) => (R[name] as (...a: unknown[]) => R.Result)(s, ...args)),
       store: useGame,
+      pose,
+      /** Stand somewhere and look at a point: teleport(x, z, lookX, lookY, lookZ). */
+      teleport: (x: number, z: number, lx: number, ly: number, lz: number) => {
+        pose.x = x; pose.z = z;
+        const dx = lx - x, dy = ly - EYE_HEIGHT, dz = lz - z;
+        pose.yaw = Math.atan2(-dx, -dz);
+        pose.pitch = Math.atan2(dy, Math.hypot(dx, dz));
+      },
+      press: (code: string) => window.dispatchEvent(new KeyboardEvent("keydown", { code })),
+      release: (code: string) => window.dispatchEvent(new KeyboardEvent("keyup", { code })),
+      get prompt() { return useGame.getState().prompt; },
     };
   }, []);
 }
