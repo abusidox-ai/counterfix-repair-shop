@@ -53,7 +53,7 @@ export function DeviceModel({ job }: { job: Job }) {
     if (handle) handle.visible = !(fault === "handle" && job.partOut && !job.repaired);
   }, [object, fault, job.repaired, job.partOut]);
   // the pickaxe ships standing up; lay it down
-  if (dev === "pickaxe") return <primitive object={object} rotation={[0, 0, Math.PI / 2]} position={[0.35, 0.0, 0]} />;
+  if (dev === "pickaxe") return <primitive object={object} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.056, 0.35]} />;
   return <primitive object={object} />;
 }
 
