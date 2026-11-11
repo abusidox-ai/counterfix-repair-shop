@@ -136,7 +136,12 @@ models["repair-desk"] = () => {
   box(g, 0.035, 0.3, 0.005, mats.steel, [-0.2, TOP + 0.55, -D / 2 + 0.06]);
   box(g, 0.04, 0.18, 0.012, mats.red, [0.3, TOP + 0.45, -D / 2 + 0.06]);
   box(g, 0.04, 0.18, 0.012, mats.red, [0.36, TOP + 0.45, -D / 2 + 0.06]);
-  box(g, 0.12, 0.12, 0.06, mats.black, [0.6, TOP + 0.56, -D / 2 + 0.07]);
+  // multimeter on a hook
+  rbox(g, 0.1, 0.17, 0.035, 0.01, M("meterYellow", "#e8b230", 0.5), [0.6, TOP + 0.52, -D / 2 + 0.065]);
+  box(g, 0.07, 0.04, 0.004, mats.lcd, [0.6, TOP + 0.57, -D / 2 + 0.084]);
+  cyl(g, 0.018, 0.018, 0.01, mats.black, [0.6, TOP + 0.5, -D / 2 + 0.085], [Math.PI / 2, 0, 0], 16);
+  cyl(g, 0.003, 0.003, 0.25, mats.red, [0.57, TOP + 0.33, -D / 2 + 0.06], [0, 0, 0.1], 6);
+  cyl(g, 0.003, 0.003, 0.25, mats.black, [0.63, TOP + 0.33, -D / 2 + 0.06], [0, 0, -0.1], 6);
   // small bins on top shelf
   for (let i = 0; i < 6; i++) {
     const m = [mats.orange, mats.blue, mats.teal][i % 3];

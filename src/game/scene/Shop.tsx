@@ -218,7 +218,7 @@ function PartBin({ kind, label, pos }: { kind: PartKind; label: string; pos: V3 
     <group position={pos}>
       <primitive object={object} />
       <primitive object={part} position={[0, 0.03, -0.05]} rotation={[-0.5, 0, 0]} scale={s} />
-      <mesh position={[0, 0.064, 0.219]}>
+      <mesh position={[0, 0.064, 0.224]}>
         <planeGeometry args={[0.235, 0.068]} />
         <meshStandardMaterial map={labelTex} roughness={0.9} />
       </mesh>

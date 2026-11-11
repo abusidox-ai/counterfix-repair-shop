@@ -43,7 +43,7 @@ export const COLLIDERS: Box[] = [
 ];
 
 // ------------------------------------------------------------- customers
-export const COUNTER_SLOT: V3 = [0, 0, -1.05];
+export const COUNTER_SLOT: V3 = [0, 0, -0.95];
 const QUEUE_X = -1.25;
 export const QUEUE_SLOTS: V3[] = [[QUEUE_X, 0, 0.3], [QUEUE_X, 0, 1.4], [QUEUE_X, 0, 2.5], [QUEUE_X, 0, 3.6], [QUEUE_X, 0, 4.7]];
 export const OUTSIDE: V3 = [0.5, 0, 12];
@@ -87,7 +87,7 @@ export interface Target { id: string; pos: V3; radius: number; label: string }
 export function targets(s: GameState): Target[] {
   const t: Target[] = [];
   const j = s.job;
-  const head: V3 = [COUNTER_SLOT[0], 1.25, COUNTER_SLOT[2]];
+  const head: V3 = [COUNTER_SLOT[0], 1.35, COUNTER_SLOT[2]];
   t.push({ id: "shelf", pos: [PARTS_SHELF.x - 0.2, 1.2, PARTS_SHELF.z], radius: 1.0, label: "Browse the parts shelf" });
   t.push({ id: "bell", pos: add(SPOTS.bell, [0, 0.05, 0]), radius: 0.09, label: "Ring the bell" });
   if (!s.tools.screwdriver || s.equipped !== "screwdriver") {

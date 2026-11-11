@@ -49,7 +49,7 @@ export function floorTexture() {
       g.fillStyle = "#1d1108";
       g.fillRect(0, row * plank, 1024, 3);
     }
-  }, [5, 4]);
+  }, [11, 9]);
 }
 
 export function wallTexture() {

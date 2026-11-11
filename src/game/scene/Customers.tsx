@@ -20,7 +20,7 @@ function placePos(p: CustomerPlace): V3 {
 }
 
 function Customer({ def, index }: { def: CustomerDef; index: number }) {
-  const { object, animations } = useModel(def.model as ModelName, { axis: "y", size: 1.45 });
+  const { object, animations } = useModel(def.model as ModelName, { axis: "y", size: 1.8 });
   const root = useRef<THREE.Group>(null);
   const { actions } = useAnimations(animations, object);
   const state = useRef<{ key: string; path: V3[]; moving: boolean; anim: string } | null>(null);
