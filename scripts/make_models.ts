@@ -9,6 +9,7 @@
 import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 // Bun has Blob but no FileReader; GLTFExporter needs it for binary output.
@@ -367,7 +368,7 @@ models["cash-register"] = () => {
   rbox(keypad, 0.34, 0.03, 0.18, 0.008, mats.cream, [0, 0.015, 0], "keypad");
   for (let i = 0; i < 5; i++) for (let j = 0; j < 4; j++) {
     const k = i === 4 ? mats.orange : j === 3 ? mats.green : mats.paper;
-    rbox(keypad, 0.04, 0.012, 0.03, 0.004, k, [-0.13 + i * 0.062, 0.034, -0.06 + j * 0.04], "key");
+    box(keypad, 0.04, 0.012, 0.03, k, [-0.13 + i * 0.062, 0.034, -0.06 + j * 0.04], "key");
   }
   g.add(keypad);
   box(g, 0.08, 0.16, 0.05, mats.charcoal, [0.08, 0.19, -0.13], "displayPost");
@@ -428,6 +429,48 @@ models["queue-stanchion"] = () => {
   return g;
 };
 
+// Nodes the game looks up by name (swapped materials, animated hands, removable parts).
+const KEEP: Record<string, string[]> = {
+  phone: ["screen", "camera"],
+  tablet: ["screen"],
+  "game-console": ["led"],
+  "garden-shears": ["handle"],
+  "wall-clock": ["hourHand", "minuteHand"],
+  "pendant-lamp": ["bulb"],
+};
+
+/** Merge every mesh outside the KEEP list into one mesh per material (fewer draw calls). */
+function bake(root: THREE.Object3D, keep: string[]) {
+  root.updateMatrixWorld(true);
+  const kept = new Set<THREE.Object3D>();
+  root.traverse((o) => { if (keep.includes(o.name)) o.traverse((c) => kept.add(c)); });
+  const buckets = new Map<THREE.Material, THREE.BufferGeometry[]>();
+  const remove: THREE.Mesh[] = [];
+  root.traverse((o) => {
+    const m = o as THREE.Mesh;
+    if (!m.isMesh || kept.has(m)) return;
+    const geo = (m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone()).applyMatrix4(m.matrixWorld);
+    for (const k of Object.keys(geo.attributes)) if (!["position", "normal", "uv"].includes(k)) geo.deleteAttribute(k);
+    const mat = m.material as THREE.Material;
+    if (!buckets.has(mat)) buckets.set(mat, []);
+    buckets.get(mat)!.push(geo);
+    remove.push(m);
+  });
+  for (const m of remove) m.parent?.remove(m);
+  // drop now-empty groups (but keep named KEEP nodes)
+  const empties: THREE.Object3D[] = [];
+  root.traverse((o) => { if (o !== root && !(o as THREE.Mesh).isMesh && o.children.length === 0 && !kept.has(o)) empties.push(o); });
+  for (const e of empties) e.parent?.remove(e);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  for (const [mat, geos] of buckets) {
+    const merged = mergeGeometries(geos, false)!;
+    merged.applyMatrix4(inv);
+    const mesh = new THREE.Mesh(merged, mat);
+    mesh.name = mat.name;
+    root.add(mesh);
+  }
+}
+
 // ---------------------------------------------------------------- export
 const exporter = new GLTFExporter();
 const names = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(models);
@@ -436,6 +479,7 @@ for (const name of names) {
   const root = models[name]();
   root.name = name;
   scene.add(root);
+  bake(root, KEEP[name] ?? []);
   const buf = (await exporter.parseAsync(scene, { binary: true })) as ArrayBuffer;
   writeFileSync(`${OUT}/${name}.glb`, Buffer.from(buf));
   console.log(`${name}.glb  ${(buf.byteLength / 1024).toFixed(1)} KB`);
