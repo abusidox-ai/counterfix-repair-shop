@@ -146,11 +146,11 @@ export function Player() {
     const o: [number, number, number] = [camera.position.x, camera.position.y, camera.position.z];
     const d: [number, number, number] = [DIR.x, DIR.y, DIR.z];
     let best: Target | null = null;
-    let bestT = REACH;
     for (const t of targets(st.game)) {
       const hit = raySphere(o, d, t.pos, t.radius);
-      // prefer small, precise targets (screws) over big ones when both are hit
-      if (hit !== null && hit - t.radius * 0.5 < bestT) { best = t; bestT = hit - t.radius * 0.5; }
+      if (hit === null || hit > REACH) continue;
+      // precise targets (screws, parts) win over the big ones around them
+      if (!best || t.radius < best.radius) best = t;
     }
     current.current = best;
     const label = best?.label ?? null;
