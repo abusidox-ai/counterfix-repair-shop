@@ -70,42 +70,62 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-paper-line: var(--paper-line);
+  --color-hud: var(--hud);
+  --color-hud-foreground: var(--hud-foreground);
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --shadow-ticket: var(--shadow-ticket);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --radius: 0.375rem;
+  /* Counterfix: repair-ticket paper, workshop ink, safety orange, bottle green. */
+  --background: oklch(0.2 0.018 55);
+  --foreground: oklch(0.95 0.02 85);
+  --card: oklch(0.95 0.025 85);
+  --card-foreground: oklch(0.24 0.02 55);
+  --popover: oklch(0.95 0.025 85);
+  --popover-foreground: oklch(0.24 0.02 55);
+  --primary: oklch(0.66 0.16 42);
+  --primary-foreground: oklch(0.98 0.01 85);
+  --secondary: oklch(0.38 0.045 170);
+  --secondary-foreground: oklch(0.96 0.02 85);
+  --muted: oklch(0.89 0.03 80);
+  --muted-foreground: oklch(0.45 0.03 60);
+  --accent: oklch(0.78 0.12 80);
+  --accent-foreground: oklch(0.24 0.02 55);
+  --destructive: oklch(0.56 0.19 28);
+  --destructive-foreground: oklch(0.98 0.01 85);
+  --success: oklch(0.58 0.12 150);
+  --success-foreground: oklch(0.98 0.01 85);
+  --ink: oklch(0.24 0.02 55);
+  --paper: oklch(0.95 0.025 85);
+  --paper-line: oklch(0.82 0.04 80);
+  --hud: oklch(0.18 0.015 55 / 0.82);
+  --hud-foreground: oklch(0.95 0.02 85);
+  --border: oklch(0.8 0.035 75);
+  --input: oklch(0.8 0.035 75);
+  --ring: oklch(0.66 0.16 42);
+  --chart-1: oklch(0.66 0.16 42);
+  --chart-2: oklch(0.38 0.045 170);
+  --chart-3: oklch(0.78 0.12 80);
+  --chart-4: oklch(0.56 0.19 28);
+  --chart-5: oklch(0.58 0.12 150);
+  --sidebar: oklch(0.95 0.025 85);
+  --sidebar-foreground: oklch(0.24 0.02 55);
+  --sidebar-primary: oklch(0.66 0.16 42);
+  --sidebar-primary-foreground: oklch(0.98 0.01 85);
+  --sidebar-accent: oklch(0.89 0.03 80);
+  --sidebar-accent-foreground: oklch(0.24 0.02 55);
+  --sidebar-border: oklch(0.8 0.035 75);
+  --sidebar-ring: oklch(0.66 0.16 42);
+  --shadow-ticket: 0 1px 0 oklch(0.82 0.04 80), 0 18px 40px -12px oklch(0.1 0.02 55 / 0.65);
 }
 
 .dark {
@@ -153,3 +173,21 @@
     color: var(--color-foreground);
   }
 }
+
+/* Counterfix HUD helpers */
+@utility ticket {
+  background-color: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-ticket);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 27px, color-mix(in oklch, var(--paper-line) 45%, transparent) 27px 28px);
+}
+@utility perforated {
+  background-image: radial-gradient(circle at 6px 50%, var(--background) 4px, transparent 4.5px);
+  background-size: 14px 12px;
+  background-repeat: repeat-x;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-toast-in { animation: toast-in 180ms ease-out; }
