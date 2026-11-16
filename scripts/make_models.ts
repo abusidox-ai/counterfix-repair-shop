@@ -158,14 +158,6 @@ models["part-battery"] = () => {
   box(g, 0.004, 0.0009, 0.02, mats.red, [-0.03, 0.0127, 0], "stripe");
   return g;
 };
-models["part-camera"] = () => {
-  const g = new THREE.Group();
-  box(g, 0.026, 0.003, 0.026, mats.pcb, [0, 0.0015, 0], "board");
-  rbox(g, 0.016, 0.008, 0.016, 0.002, mats.black, [0, 0.007, 0], "housing");
-  cyl(g, 0.0055, 0.0055, 0.003, mats.glass, [0, 0.0115, 0], [0, 0, 0], 20, "lens");
-  box(g, 0.006, 0.001, 0.03, M("flexCable2", "#d98b2b", 0.5), [0, 0.0005, 0.026], "flex");
-  return g;
-};
 models["part-handle"] = () => {
   const g = new THREE.Group();
   cyl(g, 0.016, 0.019, 0.55, mats.woodLight, [0, 0.019, 0], [0, 0, Math.PI / 2], 16, "shaft");
@@ -173,39 +165,7 @@ models["part-handle"] = () => {
   cyl(g, 0.021, 0.021, 0.012, mats.steelDark, [0.27, 0.019, 0], [0, 0, Math.PI / 2], 16, "ferrule");
   return g;
 };
-models["part-lockpick"] = () => {
-  const g = new THREE.Group();
-  box(g, 0.05, 0.004, 0.012, mats.black, [-0.04, 0.002, 0], "grip");
-  box(g, 0.08, 0.0015, 0.0025, mats.chrome, [0.025, 0.002, 0], "rod");
-  box(g, 0.003, 0.0015, 0.008, mats.chrome, [0.065, 0.002, 0.003], "hook");
-  box(g, 0.06, 0.0015, 0.0025, mats.chrome, [0.02, 0.002, 0.015], "tension");
-  box(g, 0.0025, 0.0015, 0.012, mats.chrome, [-0.01, 0.002, 0.021], "tensionBend");
-  return g;
-};
-
 // ---------------------------------------------------------------- replacement parts
-models["part-screen"] = () => {
-  const g = new THREE.Group();
-  rbox(g, 0.074, 0.004, 0.152, 0.0015, mats.black, [0, 0.002, 0], "frame");
-  rbox(g, 0.068, 0.0016, 0.144, 0.0007, mats.glass, [0, 0.0042, 0], "glass");
-  box(g, 0.012, 0.001, 0.03, M("flexCable", "#d98b2b", 0.5), [0.02, 0.0005, 0.085], "flex");
-  return g;
-};
-models["part-battery"] = () => {
-  const g = new THREE.Group();
-  rbox(g, 0.12, 0.012, 0.06, 0.003, mats.blue, [0, 0.006, 0], "cell");
-  box(g, 0.08, 0.0008, 0.035, mats.paper, [-0.008, 0.0124, 0], "label");
-  box(g, 0.015, 0.006, 0.02, mats.black, [0.065, 0.004, 0], "connector");
-  box(g, 0.004, 0.0009, 0.02, mats.red, [-0.03, 0.0127, 0], "stripe");
-  return g;
-};
-models["part-handle"] = () => {
-  const g = new THREE.Group();
-  cyl(g, 0.016, 0.019, 0.55, mats.woodLight, [0, 0.019, 0], [0, 0, Math.PI / 2], 16, "shaft");
-  for (let i = 0; i < 5; i++) cyl(g, 0.0195, 0.0195, 0.018, mats.rubber, [-0.24 + i * 0.022, 0.019, 0], [0, 0, Math.PI / 2], 16, "grip");
-  cyl(g, 0.021, 0.021, 0.012, mats.steelDark, [0.27, 0.019, 0], [0, 0, Math.PI / 2], 16, "ferrule");
-  return g;
-};
 models["counter-bell"] = () => {
   const g = new THREE.Group();
   cyl(g, 0.045, 0.05, 0.015, mats.black, [0, 0.0075, 0], [0, 0, 0], 28, "base");
