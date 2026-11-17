@@ -269,6 +269,79 @@ models["stand-counter"] = () => {
   return g;
 };
 
+// ---------------------------------------------------------------- stand shell: posts, tin roof, plank walls, pallet floor, sign board
+// Footprint x ±2.7, z −2.1…1.9 (street is +Z). Roof slopes from 2.95 m at the back to 2.62 m at the front and overhangs to z 2.25.
+models["stand-shell"] = () => {
+  const g = new THREE.Group();
+  const X0 = -2.7, X1 = 2.7, Z0 = -2.1, Z1 = 1.9;
+  // pallet floor
+  for (let i = 0; i < 22; i++) {
+    const z = Z0 + 0.05 + i * 0.182;
+    const m = i % 4 === 1 ? d.woodGrey : i % 5 === 3 ? d.woodDark : d.woodOld;
+    const p = box(g, X1 - X0 - 0.1, 0.035, 0.16, m, [0, 0.0475 + rr() * 0.004, z + 0.08]);
+    p.rotation.y = (rr() - 0.5) * 0.006;
+  }
+  for (const x of [-2.4, -0.8, 0.8, 2.4]) box(g, 0.1, 0.03, Z1 - Z0, d.woodDark, [x, 0.015, (Z0 + Z1) / 2]);
+  // posts
+  const postH = (z: number) => 2.95 - ((z - Z0) / (2.25 - Z0)) * 0.33;
+  for (const x of [X0, X1]) for (const z of [Z0, -0.1, Z1]) {
+    const h = postH(z);
+    box(g, 0.1, h, 0.1, z === -0.1 ? d.woodDark : d.woodOld, [x, h / 2, z]);
+  }
+  // back wall: uneven vertical planks
+  for (let i = 0; i < 30; i++) {
+    const x = X0 + 0.09 + i * 0.18;
+    const h = postH(Z0) - 0.03 - rr() * 0.05;
+    const m = i % 5 === 2 ? d.woodGrey : i % 7 === 4 ? d.woodDark : d.woodOld;
+    const p = box(g, 0.17, h, 0.025, m, [x, h / 2, Z0 - 0.03]);
+    p.rotation.z = (rr() - 0.5) * 0.01;
+  }
+  for (const y of [0.5, 1.6, 2.6]) box(g, X1 - X0, 0.08, 0.03, d.woodDark, [0, y, Z0 - 0.0]);
+  // rust streak patches + a tin patch nailed over a hole
+  for (let i = 0; i < 6; i++) box(g, 0.04 + rr() * 0.05, 0.4 + rr() * 0.6, 0.003, d.rust, [X0 + 0.4 + rr() * 4.6, 1.6 + rr() * 0.6, Z0 - 0.015]);
+  box(g, 0.6, 0.45, 0.004, d.tin, [1.95, 2.2, Z0 - 0.012]);
+  // side half-walls (open above, so the fog shows through)
+  for (const x of [X0, X1]) {
+    for (let i = 0; i < 6; i++) {
+      const y = 0.12 + i * 0.19;
+      const m = i % 3 === 1 ? d.woodGrey : d.woodOld;
+      const p = box(g, 0.025, 0.17, Z1 - Z0 - 0.1, m, [x + (x < 0 ? 0.03 : -0.03), y, (Z0 + Z1) / 2]);
+      p.rotation.x = (rr() - 0.5) * 0.01;
+    }
+    box(g, 0.06, 0.05, Z1 - Z0, d.woodDark, [x, 1.22, (Z0 + Z1) / 2]);
+  }
+  // roof beams
+  for (const z of [Z0, -0.1, Z1]) box(g, X1 - X0 + 0.2, 0.1, 0.1, d.woodDark, [0, postH(z) + 0.05, z]);
+  for (const x of [X0, -1.35, 0, 1.35, X1]) {
+    const len = 2.25 - Z0 + 0.2;
+    const b = box(g, 0.07, 0.07, len, d.woodOld, [x, (postH(Z0) + postH(2.25)) / 2 + 0.13, (Z0 + 2.25) / 2]);
+    b.rotation.x = Math.atan2(0.33, 2.25 - Z0);
+  }
+  // corrugated tin roof (waves along X)
+  const RW = X1 - X0 + 0.5, RL = 2.25 - Z0 + 0.35;
+  const roofGeo = new THREE.PlaneGeometry(RW, RL, 160, 1);
+  const pos = roofGeo.attributes.position as THREE.BufferAttribute;
+  for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getX(i) * 42) * 0.014);
+  roofGeo.computeVertexNormals();
+  const roofMat = M("roofTin", "#4b4e4f", 0.62, 0.55, { side: THREE.DoubleSide });
+  const roof = add(g, roofGeo, roofMat, [0, (postH(Z0) + postH(2.25)) / 2 + 0.19, (Z0 + 2.25) / 2 + 0.05], [-Math.PI / 2 + Math.atan2(0.33, 2.25 - Z0), 0, 0]);
+  roof.name = "roof";
+  // rust sheets laid over parts of the roof
+  for (let i = 0; i < 4; i++) {
+    const rg = new THREE.PlaneGeometry(0.6 + rr() * 0.5, 0.8 + rr() * 1.2, 30, 1);
+    const rp = rg.attributes.position as THREE.BufferAttribute;
+    for (let k = 0; k < rp.count; k++) rp.setZ(k, Math.sin(rp.getX(k) * 42) * 0.014 + 0.004);
+    rg.computeVertexNormals();
+    add(g, rg, M("roofRust", "#5a3420", 0.85, 0.3, { side: THREE.DoubleSide }), [X0 + 0.6 + rr() * 4.2, (postH(Z0) + postH(2.25)) / 2 + 0.19, -1.3 + rr() * 2.6], [-Math.PI / 2 + Math.atan2(0.33, 2.25 - Z0), 0, 0]);
+  }
+  // gutter along the front edge
+  cyl(g, 0.05, 0.05, RW, d.tin, [0, postH(2.25) + 0.12, 2.38], [0, 0, Math.PI / 2], 10, "gutter");
+  // sign board above the counter (the game paints the lettering on)
+  box(g, 3.2, 0.46, 0.05, d.woodDark, [0, postH(Z1) - 0.2, Z1 + 0.08], "signBoard");
+  for (const x of [-1.5, 1.5]) cyl(g, 0.008, 0.008, 0.3, d.iron, [x, postH(Z1) + 0.1, Z1 + 0.08], [0, 0, 0], 6);
+  return g;
+};
+
 // ---------------------------------------------------------------- workbench (front +Z, player side)
 models["workbench"] = () => {
   const g = new THREE.Group();
