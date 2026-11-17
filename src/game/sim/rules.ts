@@ -34,6 +34,8 @@ export interface Job {
 
 export interface PoliceEvent {
   outcome: "caught" | "escaped" | "false";
+  /** Shop clock when the cord was pulled (drives the patrol car cinematic). */
+  at: number;
   cash: number;
   rep: number;
   line: string;
@@ -293,7 +295,7 @@ export function reportPolice(s: GameState): Result {
       }
     }
   }
-  st = { ...st, police: { outcome, cash, rep, line, suspect: j.customer }, job: { ...j, where: "police" }, hands: st.hands?.t === "device" ? null : st.hands };
+  st = { ...st, police: { outcome, cash, rep, line, suspect: j.customer, at: s.clock }, job: { ...j, where: "police" }, hands: st.hands?.t === "device" ? null : st.hands };
   return ok(st, { kind: "info", text: "You pull the cord. Somewhere in the fog, a siren answers.", log: true });
 }
 function applyPolice(s: GameState): Result {
@@ -425,8 +427,9 @@ export function turnFastener(s: GameState, i = 0): Result {
     }
     if (r.slot === "empty") return no(s, "Fit a handle before you tighten the bolt.");
     if (r.bolt <= 0) return no(s, "It's already tight.");
-    const bolt = Math.max(0, r.bolt - D.BOLT_CLICKS / D.BOLT_TIGHTEN);
-    return ok(withRepair(s, { bolt }), { kind: "info", text: bolt <= 0 ? "Bolt snug. The head won't budge." : `Tightening… (${D.BOLT_TIGHTEN - bolt / (D.BOLT_CLICKS / D.BOLT_TIGHTEN)}/${D.BOLT_TIGHTEN})` });
+    const step = D.BOLT_CLICKS / D.BOLT_TIGHTEN;
+    const bolt = Math.max(0, r.bolt - step);
+    return ok(withRepair(s, { bolt }), { kind: "info", text: bolt <= 0 ? "Bolt snug. The head won't budge." : `Tightening… (${Math.round((D.BOLT_CLICKS - bolt) / step)}/${D.BOLT_TIGHTEN})` });
   }
   if (i < 0 || i >= r.out.length) return no(s, "No screw there.");
   const out = r.out.map((v, k) => (k === i ? !v : v));
