@@ -123,7 +123,6 @@ export function targets(s: R.GameState): Target[] {
       id: "pickup", pos: add(base, [0, Math.max(0.03, geo.h / 2), 0.0]), radius: 0.12, label: `Pick up the ${sp.label}`,
       alt: sp.flip ? { id: "flip", label: up ? "Turn it face-up" : "Flip it over" } : { id: "examine", label: "Examine" },
     });
-    else if (sp.flip && !r.coverOff) t.push({ id: "flip", pos: add(base, [0, geo.h / 2, 0]), radius: 0.03, label: up ? "Turn it face-up" : "Flip it over" });
     if (up && !r.coverOff) {
       geo.fasteners.forEach((p, i) => {
         const isOut = r.out[i];
