@@ -49,5 +49,9 @@ export const sfx = {
   fit: () => { tone(440, 0.08, "triangle", 0.1); tone(660, 0.12, "triangle", 0.1, 0.08); },
   register: () => { noise(0.08, 0.15, 0, 800); tone(1568, 0.5, "sine", 0.12, 0.1); tone(2093, 0.6, "sine", 0.08, 0.18); },
   bad: () => tone(160, 0.18, "sawtooth", 0.05),
+  bin: () => { noise(0.25, 0.2, 0, 400); tone(140, 0.2, "triangle", 0.08); },
+  drawer: () => { noise(0.18, 0.08, 0, 600); tone(90, 0.12, "triangle", 0.05, 0.12); },
+  siren: () => { for (let i = 0; i < 4; i++) { tone(620, 0.45, "sawtooth", 0.035, i * 0.9, 1.4); tone(870, 0.45, "sawtooth", 0.035, i * 0.9 + 0.45, 0.7); } },
+  eerie: () => { tone(110, 2.4, "sine", 0.06, 0, 0.94); tone(116.5, 2.4, "sine", 0.05, 0.1, 0.9); noise(1.2, 0.03, 0.3, 4000); },
   door: () => { tone(1318, 0.4, "sine", 0.08); tone(1046, 0.6, "sine", 0.08, 0.15); },
 };
