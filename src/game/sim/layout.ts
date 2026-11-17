@@ -1,6 +1,6 @@
 // The night stand, in world metres. +Z is the street; the player works behind the counter.
 import type { Box } from "./movement";
-import { DEVICES, PART_KINDS, PARTS, SKUS, type DeviceKind, type Sku } from "./data";
+import { BOLT_CLICKS, BROKEN_LABEL, DEVICES, PART_KINDS, PARTS, SKUS, type DeviceKind, type Sku } from "./data";
 import * as R from "./rules";
 
 export type V3 = [number, number, number];
@@ -47,7 +47,11 @@ export const COLLIDERS: Box[] = [
 
 // ------------------------------------------------------------- customers
 export const CUSTOMER_SLOT: V3 = [0, 0, 2.4];
-export const FOG_START: V3 = [0.6, 0, 17];
+export const FOG_START: V3 = [0.6, 0, 11];
+/** Leaving customers drift off sideways along the street, into the fog. */
+export const FOG_EXIT: V3 = [-9, 0, 7.5];
+/** Patrol car parks on the road; officers step out by its doors. */
+export const POLICE_CAR: V3 = [-1.2, 0, 7.6];
 /** Shop minutes a customer spends walking out of the fog to the counter. */
 export const WALK_IN = 4;
 export const WALK_OUT = 5;
@@ -115,13 +119,16 @@ export function targets(s: R.GameState): Target[] {
     const r = j.repair;
     const up = !sp.flip || r.flipped;
     const closedUp = R.closed(j);
-    if (closedUp) t.push({ id: "pickup", pos: add(base, [0, Math.max(0.03, geo.h / 2), 0.0]), radius: 0.12, label: `Pick up the ${sp.label}`, alt: { id: "examine", label: "Examine" } });
-    if (sp.flip && !h && !r.coverOff) t.push({ id: "flip", pos: add(base, [0, geo.h / 2, 0]), radius: 0.1, label: up ? "Turn it face-up" : "Flip it over" });
+    if (closedUp) t.push({
+      id: "pickup", pos: add(base, [0, Math.max(0.03, geo.h / 2), 0.0]), radius: 0.12, label: `Pick up the ${sp.label}`,
+      alt: sp.flip ? { id: "flip", label: up ? "Turn it face-up" : "Flip it over" } : { id: "examine", label: "Examine" },
+    });
+    else if (sp.flip && !r.coverOff) t.push({ id: "flip", pos: add(base, [0, geo.h / 2, 0]), radius: 0.03, label: up ? "Turn it face-up" : "Flip it over" });
     if (up && !r.coverOff) {
       geo.fasteners.forEach((p, i) => {
-        const isOut = sp.fastener === "bolt" ? r.bolt >= sp.count * 10 && r.slot === "broken" : r.out[i];
+        const isOut = r.out[i];
         const label = sp.fastener === "bolt"
-          ? r.slot === "broken" ? `Loosen the bolt (${sp.tool}) ${r.bolt}/10` : `Tighten the bolt (${sp.tool})`
+          ? r.slot === "broken" ? `Loosen the bolt (${sp.tool}) ${r.bolt}/${BOLT_CLICKS}` : `Tighten the bolt (${sp.tool}) ${BOLT_CLICKS - r.bolt}/${BOLT_CLICKS}`
           : isOut ? `Screw it back in (${sp.tool})` : `Unscrew (${sp.tool})`;
         t.push({ id: `fastener:${i}`, pos: add(base, p), radius: sp.fastener === "bolt" ? 0.04 : 0.022, label });
       });
@@ -130,7 +137,7 @@ export function targets(s: R.GameState): Target[] {
     if (sp.cover && r.coverOff) t.push({ id: "cover-on", pos: add(SPOTS.cover, [0, 0.02, 0]), radius: 0.08, label: `Put the ${sp.coverLabel} back on` });
     if (R.slotOpen(j)) {
       const pp = add(base, geo.part);
-      if (r.slot !== "empty") t.push({ id: "pull", pos: pp, radius: geo.partR, label: r.slot === "broken" || r.slot === "old" ? `Pull out the old ${sp.faults.length ? "" : ""}${j.customer.fault}` : `Pull out the ${PARTS[r.slot as Sku].name.toLowerCase()}` });
+      if (r.slot !== "empty") t.push({ id: "pull", pos: pp, radius: geo.partR, label: r.slot === "broken" || r.slot === "old" ? `Pull out the ${BROKEN_LABEL[j.customer.fault]}` : `Pull out the ${PARTS[r.slot as Sku].name.toLowerCase()}` });
       else if (h?.t === "part") t.push({ id: "fit", pos: pp, radius: geo.partR + 0.02, label: `Fit the ${R.looseName(h.part)}` });
     }
   }

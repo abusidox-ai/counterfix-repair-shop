@@ -39,7 +39,7 @@ export const stolenChance = (day: number) => Math.min(0.45, 0.22 + 0.04 * (day -
 
 // ------------------------------------------------------------- repairs
 export const BOLT_CLICKS = 10; // wrench clicks to back the bolt out
-export const BOLT_TIGHTEN = 5; // clicks to snug it back down
+export const BOLT_TIGHTEN = 10; // clicks to snug it back down (same as removal)
 
 export type Tool = "screwdriver" | "wrench";
 export type PartKind = "screen" | "battery" | "handle" | "crystal" | "spring";
